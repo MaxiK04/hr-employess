@@ -51,7 +51,7 @@ function displayEmployees(employees) {
         const fullName = `${emp.second_name} ${emp.first_name} ${emp.last_name || ''}`;
         const birthDate = formatDate(emp.birth_date);
         const passport = `${emp.passport_serial || ''} ${emp.passport_number || ''}`;
-        const hireDate = formatDate(emp.add_at);
+        const add_at = formatDate(emp.add_at);
         const salary = formatSalary(emp.salary);
         const isActive = emp.active_status;  // ДОБАВЬ ЭТУ СТРОЧКУ!
         
@@ -66,7 +66,7 @@ function displayEmployees(employees) {
                 <td>${emp.department_name || ''}</td>
                 <td>${emp.position_name || ''}</td>
                 <td>${salary}</td>
-                <td>${hireDate}</td>
+                <td>${add_at}</td>
                 <td>${isActive ? 'Активен' : 'Уволен'}</td>
                 <td>
                 <div class="action-buttons">
@@ -101,7 +101,10 @@ function hideAddForm() {
 document.getElementById('employeeForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    // Получаем данные формы
+    console.log('Отправка формы...');
+    console.log('Режим редактирования:', window.isEditing);
+    console.log('ID редактирования:', window.editingEmployeeId);
+    
     const formData = {
         second_name: document.getElementById('lastName').value,
         first_name: document.getElementById('firstName').value,
@@ -113,11 +116,12 @@ document.getElementById('employeeForm').addEventListener('submit', async functio
         email: document.getElementById('email').value,
         address: document.getElementById('address').value,
         salary: document.getElementById('salary').value,
-        id_position: document.getElementById('positionSelect').value,
-        
+        id_position: document.getElementById('positionSelect').value
     };
     
-    // Проверка обязательных полей
+    console.log('Данные формы:', formData);
+    
+    // Проверка
     if (!formData.second_name || !formData.first_name || !formData.birth_date || 
         !formData.salary || !formData.id_position) {
         alert('Заполните обязательные поля!');
@@ -125,26 +129,50 @@ document.getElementById('employeeForm').addEventListener('submit', async functio
     }
     
     try {
-        // Отправляем данные на сервер
-        const response = await fetch('http://localhost:3000/api/employees', {
-            method: 'POST',
+        let url, method;
+        
+        if (window.isEditing && window.editingEmployeeId) {
+            url = `http://localhost:3000/api/employees/${window.editingEmployeeId}`;
+            method = 'PUT';
+            console.log(`Отправка PUT запроса на: ${url}`);
+        } else {
+            url = 'http://localhost:3000/api/employees';
+            method = 'POST';
+            console.log(`Отправка POST запроса на: ${url}`);
+        }
+        
+        const response = await fetch(url, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(formData)
         });
         
+        console.log('Ответ сервера:', response.status);
+        
         if (response.ok) {
-            alert('Сотрудник добавлен!');
-            document.getElementById('employeeForm').reset();
+            const result = await response.json();
+            console.log('Результат:', result);
+            
+            alert(window.isEditing ? 'Данные обновлены!' : 'Сотрудник добавлен!');
+            
+            // Сбрасываем режим редактирования
+            window.isEditing = false;
+            window.editingEmployeeId = null;
+            
             hideAddForm();
             loadEmployees(); // Обновляем таблицу
+            
         } else {
-            alert('Ошибка при добавлении');
+            const error = await response.json();
+            console.error('Ошибка сервера:', error);
+            alert(' Ошибка: ' + (error.error || 'Неизвестная ошибка'));
         }
+        
     } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка соединения');
+        console.error('Ошибка сети:', error);
+        alert('Ошибка соединения с сервером');
     }
 });
 
@@ -188,22 +216,30 @@ async function toggleEmployeeStatus(employeeId, newStatus) {
 
 // Редактировать сотрудника
 async function editEmployee(employeeId) {
+    console.log('Редактирование сотрудника ID:', employeeId);
+    
     try {
-        // Загружаем всех сотрудников и находим нужного
         const response = await fetch('http://localhost:3000/api/employees');
         const employees = await response.json();
-        const employee = employees.find(emp => emp.employee_id === employeeId);
+        const employee = employees.find(emp => emp.employee_id == employeeId);
         
         if (!employee) {
             alert('Сотрудник не найден');
             return;
         }
         
+        console.log('Найден сотрудник:', employee);
+        
         // Заполняем форму данными
         document.getElementById('lastName').value = employee.second_name;
         document.getElementById('firstName').value = employee.first_name;
         document.getElementById('middleName').value = employee.last_name || '';
-        document.getElementById('birthDate').value = employee.birth_date.split('T')[0];
+        
+        // Форматируем дату для input type="date"
+        const birthDate = new Date(employee.birth_date);
+        const formattedDate = birthDate.toISOString().split('T')[0];
+        document.getElementById('birthDate').value = formattedDate;
+        
         document.getElementById('passportSerial').value = employee.passport_serial || '';
         document.getElementById('passportNumber').value = employee.passport_number || '';
         document.getElementById('phone').value = employee.phone || '';
@@ -212,16 +248,20 @@ async function editEmployee(employeeId) {
         document.getElementById('salary').value = employee.salary;
         document.getElementById('positionSelect').value = employee.id_position;
         
-        // Помечаем, что это редактирование
+        // Устанавливаем режим редактирования
         window.isEditing = true;
         window.editingEmployeeId = employeeId;
         
+        console.log('Установлен режим редактирования:', window.isEditing, window.editingEmployeeId);
+        
         // Показываем форму
-        showAddForm();
+        document.getElementById('addForm').style.display = 'block';
+        document.getElementById('addEmployeeBtn').style.display = 'none';
+        document.querySelector('#addForm h2').textContent = `Редактировать сотрудника (ID: ${employeeId})`;
         
     } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка загрузки данных');
+        console.error('Ошибка загрузки данных:', error);
+        alert('Ошибка загрузки данных сотрудника');
     }
 }
 
@@ -302,13 +342,18 @@ function showAddForm() {
 }
 
 // Скрыть форму (сбрасываем режим редактирования)
+// Скрыть форму
 function hideAddForm() {
     document.getElementById('addForm').style.display = 'none';
     document.getElementById('addEmployeeBtn').style.display = 'block';
     document.querySelector('#addForm h2').textContent = 'Добавить нового сотрудника';
     document.getElementById('employeeForm').reset();
+    
+    // Сбрасываем режим редактирования
     window.isEditing = false;
     window.editingEmployeeId = null;
+    
+    console.log('Форма скрыта, режим редактирования сброшен');
 }
 // Обновить данные
 function refreshData() {

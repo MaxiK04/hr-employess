@@ -126,18 +126,25 @@ app.put('/api/employees/:id', async (req, res) => {
             ]
         );
 
-        if (result.rows.length === 0) {
+         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Сотрудник не найден' });
         }
 
-        res.json({ success: true, employee: result.rows[0] });
+        console.log('Сотрудник обновлен:', result.rows[0]);
+        res.json({ 
+            success: true, 
+            message: 'Данные обновлены',
+            employee: result.rows[0] 
+        });
 
     } catch (error) {
-        console.error('Ошибка:', error);
-        res.status(500).json({ error: 'Ошибка при обновлении' });
+        console.error('Ошибка при обновлении:', error);
+        res.status(500).json({ 
+            error: 'Ошибка при обновлении',
+            details: error.message 
+        });
     }
 });
-
 app.listen(port, () => {
     console.log(`Сервер запущен: http://localhost:${port}`);
 });
