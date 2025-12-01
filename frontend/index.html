@@ -13,7 +13,6 @@
         <div class="controls">
             <input type="text" id="search" placeholder="Поиск по ФИО..." onkeyup="filterTable()">
             <button onclick="refreshData()">Обновить</button>
-            
         </div>
         <button id="addEmployeeBtn" class="add-btn" onclick="showAddForm()">Добавить сотрудника</button>
         <div id="addForm" class="add-form" style="display: none;">
@@ -71,10 +70,11 @@
                     <th>Должность</th>
                     <th>Зарплата</th>
                     <th>Дата приёма</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
-               
                 <tr><td colspan="10">Загрузка данных...</td></tr>
             </tbody>
         </table>

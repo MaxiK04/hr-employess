@@ -81,6 +81,62 @@ app.post('/api/employees', async (req, res) => {
         res.status(500).json({ error: 'Ошибка при добавлении' });
     }
 });
+app.put('/api/employees/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { active_status } = req.body;
+        
+        const result = await pool.query(
+            'UPDATE employees SET active_status = $1 WHERE employee_id = $2 RETURNING *',
+            [active_status, id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Сотрудник не найден' });
+        }
+        
+        res.json({ success: true, employee: result.rows[0] });
+        
+    } catch (error) {
+        console.error('Ошибка:', error);
+        res.status(500).json({ error: 'Ошибка при изменении статуса' });
+    }
+});
+
+// Обновить данные сотрудника
+app.put('/api/employees/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const {
+            second_name, first_name, last_name, birth_date,
+            passport_serial, passport_number, phone, email,
+            address, salary, id_position
+        } = req.body;
+
+        const result = await pool.query(
+            `UPDATE employees SET 
+                second_name = $1, first_name = $2, last_name = $3, birth_date = $4,
+                passport_serial = $5, passport_number = $6, phone = $7, email = $8,
+                address = $9, salary = $10, id_position = $11
+            WHERE employee_id = $12 RETURNING *`,
+            [
+                second_name, first_name, last_name, birth_date,
+                passport_serial, passport_number, phone, email,
+                address, salary, id_position, id
+            ]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Сотрудник не найден' });
+        }
+
+        res.json({ success: true, employee: result.rows[0] });
+
+    } catch (error) {
+        console.error('Ошибка:', error);
+        res.status(500).json({ error: 'Ошибка при обновлении' });
+    }
+});
 
 app.listen(port, () => {
     console.log(`Сервер запущен: http://localhost:${port}`);
