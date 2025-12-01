@@ -1,16 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Учет сотрудников</title>
-    <style>
-        body { font-family: Arial; padding: 20px; }
-        h1 { color: #333; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список сотрудников</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Учет сотрудников</h1>
-    <p>Система запущена и готова к работе!</p>
-    
+    <div class="container">
+        <h1>Список сотрудников</h1>
+        
+        <div class="controls">
+            <input type="text" id="search" placeholder="Поиск по ФИО..." onkeyup="filterTable()">
+            <button onclick="refreshData()">Обновить</button>
+        </div>
+
+        <table id="employeeTable">
+            <thead>
+                <tr>
+                    <th>ФИО</th>
+                    <th>Дата рождения</th>
+                    <th>Паспорт</th>
+                    <th>Телефон</th>
+                    <th>Email</th>
+                    <th>Адрес</th>
+                    <th>Отдел</th>
+                    <th>Должность</th>
+                    <th>Зарплата</th>
+                    <th>Дата приёма</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Данные загружаются через JS -->
+                <tr><td colspan="10">Загрузка данных...</td></tr>
+            </tbody>
+        </table>
+        
+        <div id="loading">Загрузка...</div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
