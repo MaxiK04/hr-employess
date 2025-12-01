@@ -13,39 +13,72 @@ const pool = new Pool({
     port: 5432,
 });
 
-// Раздача статических файлов из папки frontend
+// Раздача статических файлов из папки 
+app.use(express.json());
 app.use(express.static('frontend'));
 
 // API для получения сотрудников
+// Получить всех сотрудников
 app.get('/api/employees', async (req, res) => {
     try {
-        const query = `
+        const result = await pool.query(`
             SELECT 
-                e.employee_id,
-                e.second_name,
-                e.first_name,
-                e.last_name,
-                e.birth_date,
-                e.passport_serial,
-                e.passport_number,
-                e.phone,
-                e.email,
-                e.address,
-                e.salary,
-                e.add_at as hire_date,
+                e.*,
                 p.name as position_name,
                 d.name as department_name
             FROM employees e
             LEFT JOIN positions p ON e.id_position = p.position_id
             LEFT JOIN departament d ON p.id_departament = d.departament_id
-            ORDER BY e.second_name, e.first_name
-        `;
-        
-        const result = await pool.query(query);
+            ORDER BY e.employee_id DESC
+        `);
         res.json(result.rows);
     } catch (error) {
         console.error('Ошибка:', error);
         res.status(500).json({ error: 'Ошибка сервера' });
+    }
+});
+
+// Получить должности
+app.get('/api/positions', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT p.position_id, p.name, d.name as department_name
+            FROM positions p
+            LEFT JOIN departament d ON p.id_departament = d.departament_id
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Ошибка:', error);
+        res.status(500).json({ error: 'Ошибка сервера' });
+    }
+});
+
+// Добавить сотрудника
+app.post('/api/employees', async (req, res) => {
+    try {
+        const {
+            second_name, first_name, last_name, birth_date,
+            passport_serial, passport_number, phone, email,
+            address, salary, id_position
+        } = req.body;
+
+        const result = await pool.query(`
+            INSERT INTO employees (
+                second_name, first_name, last_name, birth_date,
+                passport_serial, passport_number, phone, email,
+                address, salary, id_position
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            RETURNING *
+        `, [
+            second_name, first_name, last_name, birth_date,
+            passport_serial, passport_number, phone, email,
+            address, salary, id_position
+        ]);
+
+        res.json({ success: true, employee: result.rows[0] });
+    } catch (error) {
+        console.error('Ошибка:', error);
+        res.status(500).json({ error: 'Ошибка при добавлении' });
     }
 });
 

@@ -25,6 +25,22 @@ h1 {
     text-align: center;
 }
 
+.add-btn {
+    display: block;
+    margin: 0 auto 20px auto;
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.add-btn:hover {
+    background: #0084ff;
+}
+
 .controls {
     margin-bottom: 20px;
     display: flex;
@@ -54,6 +70,59 @@ button:hover {
     background: #45a049;
 }
 
+/* Стили для формы добавления */
+.add-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+}
+
+.add-form h2 {
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.form-row input,
+.form-row select {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.form-buttons button[type="submit"] {
+    background: #28a745;
+}
+
+.form-buttons button[type="button"] {
+    background: #dc3545;
+}
+
+/* Стили для таблицы */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -85,17 +154,23 @@ tr:hover {
     color: #666;
 }
 
-/* Для мобильных устройств */
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-    
-    table {
-        font-size: 14px;
-    }
-    
-    th, td {
-        padding: 8px;
-    }
+#message {
+    text-align: center;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-weight: bold;
 }
+
+.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+

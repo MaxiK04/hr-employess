@@ -13,8 +13,51 @@
         <div class="controls">
             <input type="text" id="search" placeholder="Поиск по ФИО..." onkeyup="filterTable()">
             <button onclick="refreshData()">Обновить</button>
+            
         </div>
-
+        <button id="addEmployeeBtn" class="add-btn" onclick="showAddForm()">Добавить сотрудника</button>
+        <div id="addForm" class="add-form" style="display: none;">
+            
+            <h2>Добавить нового сотрудника</h2>
+            <form id="employeeForm">
+                <div class="form-row">
+                    <input type="text" id="lastName" placeholder="Фамилия*" required>
+                    <input type="text" id="firstName" placeholder="Имя*" required>
+                    <input type="text" id="middleName" placeholder="Отчество">
+                </div>
+                
+                <div class="form-row">
+                    <input type="date" id="birthDate" required>
+                    <select id="positionSelect" required>
+                        <option value="">Выберите должность</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <input type="text" id="passportSerial" placeholder="Серия паспорта (4 цифры)" maxlength="4">
+                    <input type="text" id="passportNumber" placeholder="Номер паспорта (6 цифр)" maxlength="6">
+                </div>
+                
+                <div class="form-row">
+                    <input type="tel" id="phone" placeholder="Телефон (79991234567)" pattern="[0-9]{11}">
+                    <input type="email" id="email" placeholder="Email">
+                </div>
+                
+                <div class="form-row">
+                    <input type="text" id="address" placeholder="Адрес проживания" style="width: 100%;">
+                </div>
+                
+                <div class="form-row">
+                    <input type="number" id="salary" placeholder="Зарплата*" step="0.01" min="0" required>
+                    <span style="align-self: center;">руб.</span>
+                </div>
+                
+                <div class="form-buttons">
+                    <button type="submit">Сохранить</button>
+                    <button type="button" onclick="hideAddForm()">Отмена</button>
+                </div>
+            </form>
+        </div>
         <table id="employeeTable">
             <thead>
                 <tr>
@@ -31,12 +74,12 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <!-- Данные загружаются через JS -->
+               
                 <tr><td colspan="10">Загрузка данных...</td></tr>
             </tbody>
         </table>
         
-        <div id="loading">Загрузка...</div>
+        
     </div>
 
     <script src="script.js"></script>
