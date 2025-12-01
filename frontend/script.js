@@ -50,7 +50,7 @@ function displayEmployees(employees) {
         const fullName = `${emp.second_name} ${emp.first_name} ${emp.last_name || ''}`;
         const birthDate = formatDate(emp.birth_date);
         const passport = `${emp.passport_serial || ''} ${emp.passport_number || ''}`;
-        const hireDate = formatDate(emp.hire_date);
+        const add_at = formatDate(emp.add_at);
         const salary = formatSalary(emp.salary);
         
         html += `
@@ -64,7 +64,7 @@ function displayEmployees(employees) {
                 <td>${emp.department_name || ''}</td>
                 <td>${emp.position_name || ''}</td>
                 <td>${salary}</td>
-                <td>${hireDate}</td>
+                <td>${add_at}</td>
             </tr>
         `;
     });
@@ -115,7 +115,8 @@ document.getElementById('employeeForm').addEventListener('submit', async functio
         email: document.getElementById('email').value,
         address: document.getElementById('address').value,
         salary: document.getElementById('salary').value,
-        id_position: document.getElementById('positionSelect').value
+        id_position: document.getElementById('positionSelect').value,
+        add_at:document.getElementById('add_at').value
     };
     
     // Проверка обязательных полей
